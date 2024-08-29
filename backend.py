@@ -1,19 +1,40 @@
-import newspaper
+import FinNews as fn
 import pandas as pd
+from datetime import date, timedelta
 from transformers import AutoTokenizer, AutoModelForSequenceClassification, pipeline
 import torch
 
-def get_cnbc_headlines():
-    cnbc = newspaper.build("https://www.cnbc.com/us-economy/", memoize_articles=False)
+'''
+def get_headlines():
+    #cnbc = newspaper.build("https://www.cnbc.com/us-economy/", memoize_articles=False)
+    yahoo = newspaper.build("https://finance.yahoo.com/news/", memoize_articles=False)
     df = pd.DataFrame()
 
-    for article in cnbc.articles[0:10]:
+    for article in yahoo.articles[0:10]:
         article.download()
         article.parse()
 
         temp_df = pd.DataFrame([{"Headlines": article.title, "Date": article.publish_date}])
         df = pd.concat([df, temp_df], ignore_index=True)
 
+    return df
+'''
+
+def get_headlines():
+    yahoo = fn.Yahoo(topics=["*"])
+    yahoo.get_news()
+    df = yahoo.to_pandas()
+    df = df[["title", "published"]]
+    df["published"] = pd.to_datetime(df["published"])
+    df["published"] = df["published"].dt.tz_localize(None).dt.date
+    today = date.today()
+    if df[df["published"] == today].empty:
+        df = df[df["published"] == today - timedelta(days=1)]
+    else:
+        df = df[df["published"] == today]
+    df.columns = ["Headlines", "Date"]
+    df = df[~df["Headlines"].str.startswith(("Market Update", "Analyst Report"))]
+    df = df.head(10).reset_index(drop=True)
     return df
 
 
@@ -43,7 +64,7 @@ def get_final_class(df):
 
 
 if __name__ == "__main__":
-    df = get_cnbc_headlines()
+    df = get_headlines()
     print(df.head())
     df = apply_probabilities(df)
     print(df.head())
