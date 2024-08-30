@@ -5,6 +5,10 @@ from transformers import AutoTokenizer, AutoModelForSequenceClassification, pipe
 import torch
 
 
+tokenizer = AutoTokenizer.from_pretrained("jeroenvdmbrugge/sp500-predictor-individual-headlines")
+model = AutoModelForSequenceClassification.from_pretrained("jeroenvdmbrugge/sp500-predictor-individual-headlines")
+pred = pipeline("text-classification", model=model, tokenizer=tokenizer, return_all_scores=True)
+
 def get_headlines():
     yahoo = fn.Yahoo(topics=["*"])
     yahoo.get_news()
@@ -22,36 +26,26 @@ def get_headlines():
     df = df.head(10).reset_index(drop=True)
     return df
 
-
-def get_probabilities(headline):
-    tokenizer = AutoTokenizer.from_pretrained("jvdm_sp500_dr_individual_v1")
-    model = AutoModelForSequenceClassification.from_pretrained("jvdm_sp500_dr_individual_v1")
-    pred = pipeline("text-classification", model=model, tokenizer=tokenizer, return_all_scores=True)
-
+def get_probabilities(headline, pred):
     result = pred(headline)
     scores = [label["score"] for label in result[0]]
-
     return torch.tensor(scores)
 
-
-def apply_probabilities(df):
-    df["Probabilities"] = df["Headlines"].apply(get_probabilities)
-
+def apply_probabilities(df, pred):
+    df["Probabilities"] = df["Headlines"].apply(lambda x: get_probabilities(x, pred))
     return df
 
 def get_final_class(df):
     prob_tensors = torch.stack(df["Probabilities"].tolist())
     average_probabilities = prob_tensors.mean(dim=0)
-    class_labels = ['Decrease', 'Sustain', 'Increase']
+    class_labels = ['decrease', 'maintain', 'increase']
     final_class = class_labels[torch.argmax(average_probabilities).item()]
-
     return final_class
-
 
 if __name__ == "__main__":
     df = get_headlines()
     print(df.head())
-    df = apply_probabilities(df)
+    df = apply_probabilities(df, pred)
     print(df.head())
     final_class = get_final_class(df)
     print(final_class)
