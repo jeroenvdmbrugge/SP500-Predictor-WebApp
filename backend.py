@@ -4,21 +4,6 @@ from datetime import date, timedelta
 from transformers import AutoTokenizer, AutoModelForSequenceClassification, pipeline
 import torch
 
-'''
-def get_headlines():
-    #cnbc = newspaper.build("https://www.cnbc.com/us-economy/", memoize_articles=False)
-    yahoo = newspaper.build("https://finance.yahoo.com/news/", memoize_articles=False)
-    df = pd.DataFrame()
-
-    for article in yahoo.articles[0:10]:
-        article.download()
-        article.parse()
-
-        temp_df = pd.DataFrame([{"Headlines": article.title, "Date": article.publish_date}])
-        df = pd.concat([df, temp_df], ignore_index=True)
-
-    return df
-'''
 
 def get_headlines():
     yahoo = fn.Yahoo(topics=["*"])
