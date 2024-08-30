@@ -26,7 +26,7 @@ def get_headlines():
 def get_probabilities(headline):
     tokenizer = AutoTokenizer.from_pretrained("jvdm_sp500_dr_individual_v1")
     model = AutoModelForSequenceClassification.from_pretrained("jvdm_sp500_dr_individual_v1")
-    pred = pipeline("text-classification", model=model, tokenizer=tokenizer, device=0, return_all_scores=True)
+    pred = pipeline("text-classification", model=model, tokenizer=tokenizer, return_all_scores=True)
 
     result = pred(headline)
     scores = [label["score"] for label in result[0]]
