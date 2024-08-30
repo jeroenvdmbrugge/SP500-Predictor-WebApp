@@ -16,14 +16,7 @@ st.markdown("""
 
 if st.button('Get Headlines and Predict S&P500 Movement'):
     df = get_headlines()
-    #st.subheader("Headlines")
-    #st.session_state.headlines = df  # Store headlines in session state
     st.table(df)
-
-    #headlines = st.session_state.headlines["Headlines"].values
-
-    #st.subheader("Prediction")
-    #df = st.session_state.headlines
     df = apply_probabilities(df)
     final_class = get_final_class(df)
     if final_class == "Decrease":
