@@ -9,7 +9,7 @@ tokenizer = AutoTokenizer.from_pretrained("jeroenvdmbrugge/sp500-predictor-indiv
 model = AutoModelForSequenceClassification.from_pretrained("jeroenvdmbrugge/sp500-predictor-individual-headlines")
 pred = pipeline("text-classification", model=model, tokenizer=tokenizer, return_all_scores=True)
 
-def get_headlines():
+def get_headlines(num_headlines=5):
     yahoo = fn.Yahoo(topics=["*"])
     yahoo.get_news()
     df = yahoo.to_pandas()
@@ -23,7 +23,7 @@ def get_headlines():
         df = df[df["published"] == today]
     df.columns = ["Headlines", "Date"]
     df = df[~df["Headlines"].str.startswith(("Market Update", "Analyst Report"))]
-    df = df.head(10).reset_index(drop=True)
+    df = df.head(num_headlines).reset_index(drop=True)
     return df
 
 def get_probabilities(headline, pred):
@@ -43,7 +43,7 @@ def get_final_class(df):
     return final_class
 
 if __name__ == "__main__":
-    df = get_headlines()
+    df = get_headlines(num_headlines=5)
     print(df.head())
     df = apply_probabilities(df, pred)
     print(df.head())
