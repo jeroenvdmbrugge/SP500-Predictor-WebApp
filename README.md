@@ -29,7 +29,7 @@ The app is deployed on the Streamlit Community Cloud. You can try it out here: [
    ```
 2. Navigate to the project directory:
    ```bash
-   cd sp500-predictor
+   cd SP500-Predictor-WebApp
    ```
 3. Install the required dependencies:
    ```bash
