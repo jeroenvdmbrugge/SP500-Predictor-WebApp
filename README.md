@@ -25,11 +25,11 @@ The app is deployed on the Streamlit Community Cloud. You can try it out here: [
 ## Installation
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/sp500-predictor.git
+   git clone https://github.com/jeroenvdmbrugge/SP500-Predictor-WebApp.git
    ```
 2. Navigate to the project directory:
    ```bash
-   cd sp500-predictor
+   cd SP500-Predictor-WebApp
    ```
 3. Install the required dependencies:
    ```bash
