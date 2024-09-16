@@ -24,9 +24,20 @@ st.markdown("""
 if "headlines_obtained" not in st.session_state:
     st.session_state.headlines_obtained = False
 
+if "slider_value" not in st.session_state:
+    st.session_state.slider_value = 5
+
 # Step 1: Fetch Headlines
 st.markdown("### Step 1: Get Latest Headlines from Yahoo Finance")
-num_headlines = st.slider("Select number of headlines:", min_value=1, max_value=10, value=5)
+num_headlines = st.slider("Select number of headlines:", min_value=1, max_value=10, value=st.session_state.slider_value)
+
+# Reset app state if the slider value changes
+if num_headlines != st.session_state.slider_value:
+    st.session_state.headlines_obtained = False
+    st.session_state.slider_value = num_headlines
+    if 'df' in st.session_state:
+        del st.session_state['df']
+
 if st.button("Fetch Headlines"):
     with st.spinner("Fetching headlines..."):
         df = get_headlines(num_headlines)
